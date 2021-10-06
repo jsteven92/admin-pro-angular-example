@@ -1,0 +1,27 @@
+<div class="input-group">
+    <span class="input-group-btn">
+        <button 
+        [ngClass]="btnClass"
+        (click)="changeValueButton(5)" 
+        type="button">
+            <i class="fa fa-plus"></i>
+        </button>
+    </span>
+
+     <!-- for this progress work you need import FormModule in pages.module -->
+    <input type="number" 
+    class="form-control" 
+    placeholder="Product name"
+    [ngClass] = "{'is-invalid': progress > 100 || progress < 0 }"
+    (ngModelChange)="changeValueInput( $event )"
+    [(ngModel)]="progress" />
+
+    <span class="input-group-btn">
+        <button 
+        [ngClass]="btnClass"
+        (click)="changeValueButton(-5)" 
+        type="button">
+            <i class="fa fa-minus"></i>
+        </button>
+    </span>
+</div>
