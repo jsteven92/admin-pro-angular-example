@@ -2,11 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, NgZone } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { catchError, map, tap } from 'rxjs/operators'
+import { Observable, of } from 'rxjs';
+import { Router } from '@angular/router';
 
 import { LoginForm } from '../interfaces/login-form.interface';
 import { RegisterForm } from '../interfaces/register-form.interface';
-import { Observable, of } from 'rxjs';
-import { Router } from '@angular/router';
+
+import { User } from '../models/user.model';
+import { ProfileForm } from '../interfaces/profile-form.interface';
 
 const base_url = environment.base_url;
 declare const gapi: any;
@@ -17,6 +20,7 @@ declare const gapi: any;
 export class UserService {
 
   public auth2: any;
+  public user!: User
 
   constructor( private http: HttpClient,
     private router: Router,
@@ -27,7 +31,7 @@ export class UserService {
 
 
   googleInit () {
-    return new Promise<any>( (resolve) => {
+    return new Promise<any>( ( resolve ) => {
       gapi.load( 'auth2', () => {
         // Retrieve the singleton for the GoogleAuth library and set up the client.
         this.auth2 = gapi.auth2.init( {
@@ -35,27 +39,43 @@ export class UserService {
           cookiepolicy: 'single_host_origin',
         } );
 
-        resolve(this.auth2);
+        resolve( this.auth2 );
       } );
     } )
 
   }
 
   renewToken (): Observable<boolean> {
-    const token = localStorage.getItem( 'token' ) || '';
 
     return this.http.get( `${base_url}login/renew`, {
       headers: {
-        'x-token': token
+        'x-token': this.getToken
       }
     } ).pipe(
-      tap( ( resp: any ) => {
+      map( ( resp: any ) => {
+        const { name,
+          email,
+          role,
+          google,
+          image = '',
+          uid } = resp.user;
+        /** no se puede iguar user con resp.user porque se pierden las funciones del modelo en caso de tenerlas */
+        this.user = new User( name, email, '', image, role, google, uid );
+
         localStorage.setItem( 'token', resp.token );
-      } ),
-      map( resp => true )
+        return true;
+      } )
       , catchError( error => of( false ) )
     );
 
+  }
+
+  get getToken (): string {
+    return localStorage.getItem( 'token' ) || '';
+  }
+
+  get getUid (): string {
+    return this.user.uid || '';
   }
 
   createUser ( formData: RegisterForm ) {
@@ -67,6 +87,15 @@ export class UserService {
         } )
       );
 
+  }
+
+  updateUser ( profileData: ProfileForm ) {
+
+    return this.http.put( `${base_url}users/${ this.getUid }`, profileData, {
+      headers: {
+        'x-token': this.getToken
+      }
+    } )
   }
 
   login ( formData: LoginForm ) {

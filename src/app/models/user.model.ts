@@ -1,3 +1,6 @@
+import { environment } from "src/environments/environment";
+
+const base_url = environment.base_url;
 export class User {
     constructor(
         public name: string,
@@ -7,6 +10,16 @@ export class User {
         public role?: string,
         public google?: boolean,
         public uid?: string,
-    ) {
+    ) { }
+
+    get getImageUrl (): string {
+        if( this.image?.includes('google') ){
+            return this.image;
+        }
+        
+        if ( this.image ) {
+            return `${base_url}upload/users/${this.image}`;
+        } else
+            return `${base_url}upload/users/nothing`;
     }
 }

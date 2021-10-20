@@ -8,6 +8,7 @@ import { Grafica1Component } from './grafica1/grafica1.component';
 import { AccountSettingsComponent } from './account-settings/account-settings.component';
 import { PromiseComponent } from './promise/promise.component';
 import { RxjsComponent } from './rxjs/rxjs.component';
+import { ProfilesComponent } from './profiles/profiles.component';
 
 
 /**item router child section 4 class 35 */
@@ -24,6 +25,7 @@ const routes: Routes = [
             { path: 'account-settings', component: AccountSettingsComponent, data: { title: 'Theme' } },
             { path: 'promise', component: PromiseComponent, data: { title: 'Promise example' } },
             { path: 'rxjs', component: RxjsComponent, data: { title: 'Rxjs examples' } },
+            { path: 'profile', component: ProfilesComponent, data: { title: 'user profile' } },
         ]
     }
 ];
