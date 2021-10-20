@@ -10,6 +10,8 @@ import { RegisterForm } from '../interfaces/register-form.interface';
 
 import { User } from '../models/user.model';
 import { ProfileForm } from '../interfaces/profile-form.interface';
+import { LoadUser } from '../interfaces/load-user.interface';
+
 
 const base_url = environment.base_url;
 declare const gapi: any;
@@ -47,11 +49,7 @@ export class UserService {
 
   renewToken (): Observable<boolean> {
 
-    return this.http.get( `${base_url}login/renew`, {
-      headers: {
-        'x-token': this.getToken
-      }
-    } ).pipe(
+    return this.http.get( `${base_url}login/renew`, this.headers ).pipe(
       map( ( resp: any ) => {
         const { name,
           email,
@@ -78,6 +76,13 @@ export class UserService {
     return this.user.uid || '';
   }
 
+  get headers () {
+    return {
+      headers: {
+        'x-token': this.getToken
+      }
+    }
+  }
   createUser ( formData: RegisterForm ) {
 
     return this.http.post( `${base_url}users`, formData )
@@ -91,11 +96,7 @@ export class UserService {
 
   updateUser ( profileData: ProfileForm ) {
 
-    return this.http.put( `${base_url}users/${ this.getUid }`, profileData, {
-      headers: {
-        'x-token': this.getToken
-      }
-    } )
+    return this.http.put( `${base_url}users/${this.getUid}`, profileData, this.headers )
   }
 
   login ( formData: LoginForm ) {
@@ -132,4 +133,25 @@ export class UserService {
 
       } );
   }
+
+  loadUser ( from: number = 0 ) {
+    const url = `${base_url}users?from=${from}`;
+    return this.http.get<LoadUser>( url, this.headers )
+      .pipe(
+        map( res => {
+          const users = res.users.map( user => new User( user.name, user.email, '', user.image, user.role, user.google, user.uid ) )
+          return {
+            totalUsers: res.totalUsers,
+            users
+          }
+        } )
+      )
+  }
+
+  deleteUser ( user: User ) {
+    const url = `${base_url}users/${user.uid}`;
+    return this.http.delete( url, this.headers );
+
+  }
+
 }

@@ -13,11 +13,12 @@ export class User {
     ) { }
 
     get getImageUrl (): string {
-        if( this.image?.includes('google') ){
-            return this.image;
-        }
         
-        if ( this.image ) {
+        if ( !this.image ) {
+            return `${base_url}upload/users/nothing`;
+        } else if ( this.image?.includes( 'google' ) ) {
+            return this.image;
+        } else if ( this.image ) {
             return `${base_url}upload/users/${this.image}`;
         } else
             return `${base_url}upload/users/nothing`;

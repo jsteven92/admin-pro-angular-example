@@ -19,6 +19,7 @@ import { AccountSettingsComponent } from './account-settings/account-settings.co
 import { PromiseComponent } from './promise/promise.component';
 import { RxjsComponent } from './rxjs/rxjs.component';
 import { ProfilesComponent } from './profiles/profiles.component';
+import { UsersComponent } from './maintenance/users/users.component';
 
 
 @NgModule({
@@ -30,7 +31,8 @@ import { ProfilesComponent } from './profiles/profiles.component';
     AccountSettingsComponent,
     PromiseComponent,
     RxjsComponent,
-    ProfilesComponent
+    ProfilesComponent,
+    UsersComponent
   ],
   imports: [
     CommonModule,
